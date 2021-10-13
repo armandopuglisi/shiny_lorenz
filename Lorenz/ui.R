@@ -39,11 +39,6 @@ shinyUI(fluidPage(
                 column(4, plotOutput("y_plot")),
                 column(4, plotOutput("z_plot"))
                 ),
-            # fluidRow(
-            #     column(4, highchartOutput("x_plot_hc")),
-            #     column(4, highchartOutput("y_plot_hc")),
-            #     column(4, highchartOutput("z_plot_hc"))
-            # ),
             fluidRow(
                 column(4, plotOutput("xy_plot")),
                 column(4, plotOutput("xz_plot")),
