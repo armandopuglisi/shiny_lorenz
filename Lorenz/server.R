@@ -32,7 +32,12 @@ plotly_time_series <- function(df, x, y, z, t){
         add_lines(x = ~df[,t], y = ~df[,x], name = "X(t)") %>%
         add_lines(x = ~df[,t], y = ~df[,y], name = "Y(t)") %>%
         add_lines(x = ~df[,t], y = ~df[,z], name = "Z(t)") %>%
-        layout(title = "Time series", xaxis = list(title = "Time"), yaxis = list(title = "X, Y, Z "))
+        layout(title = "Time series", 
+               xaxis = list(title = "Time"), 
+               yaxis = list(title = "X, Y, Z "),
+               legend = list(orientation = 'h')
+               
+               )
     
 }
 
@@ -47,7 +52,8 @@ plotly_2d_trajectory <- function(df, x, y, state){
         add_markers(x = ~state[x], y = ~ state[y] , name = "initial_state") %>%
         plotly::layout(title = paste0('Lorenz trajectory ',x," - ",y), 
                        xaxis = list(title = x), 
-                       yaxis = list(title = y)
+                       yaxis = list(title = y),
+                       legend = list(orientation = 'h')
         )
 }
 
@@ -59,7 +65,8 @@ plotly_trajectory <- function(df, x, y, z, state, line_col){
                        scene= list(xaxis = list(title = 'X'), 
                                    yaxis = list(title = 'Y'),
                                    zaxis = list(title = 'Z')
-                       )
+                       ),
+                       legend = list(orientation = 'h')
         )
     
 }
