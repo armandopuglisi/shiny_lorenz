@@ -11,7 +11,7 @@ library(shiny)
 library(dplyr)
 library(deSolve)
 library(ggplot2)
-library(highcharter)
+library(plotly)
 
 Lorenz <- function(t, state, parameters) {
     with(as.list(c(state, parameters)), {
@@ -27,9 +27,33 @@ plot_time_series <- function(df, x, y, line_col){
     ggplot(df, aes_string(x = x, y = y)) + geom_line(col = line_col) + theme_bw()
 }
 
+plotly_time_series <- function(df, x, y, z){
+    plot_ly(df) %>%
+        add_lines(x = ~df[,t], y = ~df[,x], name = "X(t)") %>%
+        add_lines(x = ~df[,t], y = ~df[,y], name = "Y(t)") %>%
+        add_lines(x = ~df[,t], y = ~df[,z], name = "Z(t)") %>%
+        layout(title = "Time series", xaxis = list(title = "Time"), yaxis = list(title = "X, Y, Z "))
+    
+}
+
+
 plot_trajectory <- function(df, x, y, line_col){
     ggplot(df, aes_string(x = x, y = y)) + geom_point(col = line_col) + theme_bw()
 }
+
+plotly_trajectory <- function(df, x, y, z, state, line_col){
+    plot_ly() %>%
+        add_paths(data = df, x =  df[,x], y = df[,y], z = df[,z], name = "trajectory") %>%
+        add_markers(x = ~state[1], y = ~ state[2], z =~ state[3] , name = "initial_state") %>%
+        plotly::layout(title = 'Lorenz trajectory', 
+                       scene= list(xaxis = list(title = 'X'), 
+                                   yaxis = list(title = 'Y'),
+                                   zaxis = list(title = 'Z')
+                       )
+        )
+    
+}
+
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
@@ -48,16 +72,6 @@ shinyServer(function(input, output) {
         state <<- c(X = input$X, Y = input$Y, Z = input$Z)
         
     })
-    
-    # observeEvent(input$go,{
-    #     cat("setting parameters \n")
-    #     parameters <<- list("sigma" = input$sigma,
-    #                        "rho" = input$rho,
-    #                        "beta" = input$beta)
-    #     times <<- seq(0, input$time, by = 0.01)
-    #     state <<- c(X = input$X, Y = input$Y, Z = input$Z)
-    #     
-    # })
     
     solution <- reactiveValues(solution = NULL)
     observeEvent(input$solve,{
@@ -110,25 +124,17 @@ shinyServer(function(input, output) {
         }
     })
     
-    # output$x_plot_hc <- renderHighchart({
-    #     
-    #     highchart() %>% 
-    #         hc_add_series(data = solution[["solution"]], hcaes(x = time, y = X), type = "line", size = 0.1)     
-    #     
-    # })
-    # 
-    # output$y_plot_hc <- renderHighchart({
-    #     
-    #     highchart() %>% 
-    #         hc_add_series(data = solution[["solution"]], hcaes(x = time, y = Y), type = "line", size = 0.1)     
-    #     
-    # })
-    # 
-    # output$z_plot_hc <- renderHighchart({
-    #     
-    #     highchart() %>% 
-    #         hc_add_series(data = solution[["solution"]], hcaes(x = time, y = Z), type = "line", size = 0.1)     
-    #     
-    # })
+    output$plotly_time_series <- renderPlotly({
+        if(!is.null(solution[["solution"]])){
+        plotly_time_series(solution[["solution"]], x = "X", y = "Y", z = "Z")
+        }
+    })
+    
+    output$plotly_3d <- renderPlotly({
+        if(!is.null(solution[["solution"]])){
+        plotly_trajectory(solution[["solution"]], x = "Y", y = "Z",z = "Z", state = state, line_col = "gray4")
+        }
+    }
+        )
     
 })

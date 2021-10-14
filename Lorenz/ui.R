@@ -35,14 +35,20 @@ shinyUI(fluidPage(
         mainPanel(
             actionButton("solve", "Solve Lorenz"),
             fluidRow(
-                column(4, plotOutput("x_plot")),
-                column(4, plotOutput("y_plot")),
-                column(4, plotOutput("z_plot"))
-                ),
+                column(12, plotlyOutput("plotly_time_series"))
+            ),
+            # fluidRow(
+            #     column(4, plotOutput("x_plot")),
+            #     column(4, plotOutput("y_plot")),
+            #     column(4, plotOutput("z_plot"))
+            #     ),
+            # fluidRow(
+            #     column(4, plotOutput("xy_plot")),
+            #     column(4, plotOutput("xz_plot")),
+            #     column(4, plotOutput("yz_plot"))
+            # ),
             fluidRow(
-                column(4, plotOutput("xy_plot")),
-                column(4, plotOutput("xz_plot")),
-                column(4, plotOutput("yz_plot"))
+                column(12, plotlyOutput("plotly_3d"))
             )
         )
     )
