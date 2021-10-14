@@ -23,11 +23,11 @@ Lorenz <- function(t, state, parameters) {
 }
 
 
-plot_time_series <- function(df, x, y, line_col){
-    ggplot(df, aes_string(x = x, y = y)) + geom_line(col = line_col) + theme_bw()
-}
+# plot_time_series <- function(df, x, y, line_col){
+#     ggplot(df, aes_string(x = x, y = y)) + geom_line(col = line_col) + theme_bw()
+# }
 
-plotly_time_series <- function(df, x, y, z){
+plotly_time_series <- function(df, x, y, z, t){
     plot_ly(df) %>%
         add_lines(x = ~df[,t], y = ~df[,x], name = "X(t)") %>%
         add_lines(x = ~df[,t], y = ~df[,y], name = "Y(t)") %>%
@@ -37,8 +37,18 @@ plotly_time_series <- function(df, x, y, z){
 }
 
 
-plot_trajectory <- function(df, x, y, line_col){
-    ggplot(df, aes_string(x = x, y = y)) + geom_point(col = line_col) + theme_bw()
+# plot_trajectory <- function(df, x, y, line_col){
+#     ggplot(df, aes_string(x = x, y = y)) + geom_point(col = line_col) + theme_bw()
+# }
+
+plotly_2d_trajectory <- function(df, x, y, state){
+    plot_ly() %>%
+        add_paths(data = df, x =  df[,x], y = df[,y], name = "trajectory") %>%
+        add_markers(x = ~state[x], y = ~ state[y] , name = "initial_state") %>%
+        plotly::layout(title = paste0('Lorenz trajectory ',x," - ",y), 
+                       xaxis = list(title = x), 
+                       yaxis = list(title = y)
+        )
 }
 
 plotly_trajectory <- function(df, x, y, z, state, line_col){
@@ -82,51 +92,9 @@ shinyServer(function(input, output) {
     })
     
     
-    output$x_plot <- renderPlot({
-        if(!is.null(solution[["solution"]])){
-            cat("plotting \n")
-            plot_time_series(solution[["solution"]], x = "time", y = "X",line_col = "green4")
-        }
-    })
-
-    output$y_plot <- renderPlot({
-        if(!is.null(solution[["solution"]])){
-            cat("plotting \n")
-            plot_time_series(solution[["solution"]], x = "time", y = "Y", line_col = "red4")
-        }
-    })
-    
-    output$z_plot <- renderPlot({
-        if(!is.null(solution[["solution"]])){
-            cat("plotting \n")
-           plot_time_series(solution[["solution"]], x = "time", y = "Z", line_col = "blue4")
-        }
-    })
-    
-    output$xy_plot <- renderPlot({
-        if(!is.null(solution[["solution"]])){
-            cat("plotting \n")
-            plot_trajectory(solution[["solution"]], x = "X", y = "Y", line_col = "gray4")
-        }
-    })
-    
-    output$xz_plot <- renderPlot({
-        if(!is.null(solution[["solution"]])){
-            cat("plotting \n")
-            plot_trajectory(solution[["solution"]], x = "X", y = "Z", line_col = "gray4")
-        }
-    })
-        
-    output$yz_plot <- renderPlot({
-        if(!is.null(solution[["solution"]])){
-            cat("plotting \n")
-            plot_trajectory(solution[["solution"]], x = "Y", y = "Z", line_col = "gray4")
-        }
-    })
-    
     output$plotly_time_series <- renderPlotly({
         if(!is.null(solution[["solution"]])){
-        plotly_time_series(solution[["solution"]], x = "X", y = "Y", z = "Z")
+        plotly_time_series(solution[["solution"]], x = "X", y = "Y", z = "Z", t = "time")
         }
     })
     
@@ -134,7 +102,25 @@ shinyServer(function(input, output) {
         if(!is.null(solution[["solution"]])){
         plotly_trajectory(solution[["solution"]], x = "Y", y = "Z",z = "Z", state = state, line_col = "gray4")
         }
-    }
-        )
+    })
+    
+    
+    output$plotly_xy <- renderPlotly({
+        if(!is.null(solution[["solution"]])){
+        plotly_2d_trajectory(df = solution[["solution"]], x = "X", y = "Y", state = state)
+        }
+    })
+    
+    output$plotly_xz <- renderPlotly({
+        if(!is.null(solution[["solution"]])){
+        plotly_2d_trajectory(df = solution[["solution"]], x = "X", y = "Z", state = state)
+        }
+    })
+    
+    output$plotly_yz <- renderPlotly({
+        if(!is.null(solution[["solution"]])){
+        plotly_2d_trajectory(df = solution[["solution"]], x = "Y", y = "Z", state = state)
+        }
+    })
     
 })

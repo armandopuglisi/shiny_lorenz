@@ -8,7 +8,7 @@
 #
 
 library(shiny)
-library(ggplot2)
+library(plotly)
 
 
 # Define UI for application that draws a histogram
@@ -35,20 +35,13 @@ shinyUI(fluidPage(
         mainPanel(
             actionButton("solve", "Solve Lorenz"),
             fluidRow(
-                column(12, plotlyOutput("plotly_time_series"))
+                column(6, plotlyOutput("plotly_time_series")),
+                column(6, plotlyOutput("plotly_3d"))
             ),
-            # fluidRow(
-            #     column(4, plotOutput("x_plot")),
-            #     column(4, plotOutput("y_plot")),
-            #     column(4, plotOutput("z_plot"))
-            #     ),
-            # fluidRow(
-            #     column(4, plotOutput("xy_plot")),
-            #     column(4, plotOutput("xz_plot")),
-            #     column(4, plotOutput("yz_plot"))
-            # ),
             fluidRow(
-                column(12, plotlyOutput("plotly_3d"))
+                column(4, plotlyOutput("plotly_xy")),
+                column(4, plotlyOutput("plotly_xz")),
+                column(4, plotlyOutput("plotly_yz"))
             )
         )
     )
